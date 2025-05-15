@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Vehiculo
- * 
+ *
  * @property int $Id
  * @property int|null $cilindraje
  * @property string|null $imagen
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $nombre
  * @property string|null $placa
  * @property int|null $usuario_id
- * 
+ *
  * @property Usuario|null $usuario
  * @property Collection|Cita[] $citas
  * @property Collection|Registrosmante[] $registrosmantes

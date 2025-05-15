@@ -14,7 +14,11 @@ class CitaController extends Controller
     public function index()
     {
         $citas = Cita::all();
-        return response()->json($citas);
+        if ($citas->isEmpty()) {
+            return response()->json(['message' => 'No hay recursos dispinibles.'], 404);
+        }
+
+        return response()->json($citas, 200);
     }
 
     /**
@@ -31,19 +35,14 @@ class CitaController extends Controller
             'caracteristicas' => 'required|string|max:255',
             'fechaCita' => 'required|date',
             'fechaPeticion' => 'required|date',
-            'registroVehiculo_Id' => 'required|integer|exists:vehiculos,registroVehiculo_Id',
+            'registroVehiculo_Id' => 'integer|exists:vehiculos,id',
             'usuario_id' => 'required|integer|exists:usuarios,id'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        $cita = Cita::create([
-            'caracteristicas' => $request->input('caracteristicas'),
-            'fechaCita' => $request->input('fechaCita'),
-            'fechaPeticion' => $request->input('fechaPeticion'),
-            'registroVehiculo_Id' => $request->input('registroVehiculo_Id'),
-            'usuario_id' => $request->input('usuario_id')
-        ]);
+        $cita = Cita::create($request->all());
+
         return response()->json($cita, 201);
     }
 
@@ -54,9 +53,9 @@ class CitaController extends Controller
     {
         $cita = Cita::find($id);
         if (!$cita) {
-            return response()->json(['message' => 'Cita not found'], 404);
+            return response()->json(['message' => 'No se encontro el recurso.'], 404);
         }
-        return response()->json($cita);
+        return response()->json($cita, 200);
     }
 
     /**
@@ -70,11 +69,11 @@ class CitaController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'caracteristicas' => 'required|string|max:255',
-            'fechaCita' => 'required|date',
-            'fechaPeticion' => 'required|date',
-            'registroVehiculo_Id' => 'required|integer|exists:vehiculos,registroVehiculo_Id',
-            'usuario_id' => 'required|integer|exists:usuarios,id'
+            'caracteristicas' => 'string|max:255',
+            'fechaCita' => 'date',
+            'fechaPeticion' => 'date',
+            'registroVehiculo_Id' => 'integer|exists:vehiculos,id',
+            'usuario_id' => 'integer|exists:usuarios,id'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
