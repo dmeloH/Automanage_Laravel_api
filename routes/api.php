@@ -4,6 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CitaController;
+use App\Http\Controllers\RegistroManteController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehiculoController;
 
 Route::middleware('api')->group(function () {
     Route::post('/auth/registrar', [AuthController::class, 'registrar']);
@@ -24,3 +28,14 @@ Route::middleware('api', 'auth.role:admin')->group(function () {
         return response()->json(['message' => 'admin']);
     });
 });
+
+
+Route::middleware('api')->group(function () {
+    Route::resource('data', UserController::class);
+    Route::resource('citas', CitaController::class);
+    Route::resource('mantenimiento', RegistroManteController::class);
+    Route::resource('vehiculos', VehiculoController::class);
+});
+
+
+

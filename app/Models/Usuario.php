@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
  * Class Usuario
- * 
+ *
  * @property int $id
  * @property string|null $direccion
  * @property string|null $email
@@ -21,9 +21,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @property string|null $password
  * @property string|null $resetToken
  * @property string|null $telefono
- * @property string|null $tipo
+ * @property string|null $role
  * @property string|null $username
- * 
+ *
  * @property Collection|Cita[] $citas
  * @property Collection|Ordene[] $ordenes
  * @property Collection|Producto[] $productos
