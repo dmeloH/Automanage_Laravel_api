@@ -19,25 +19,30 @@ class RoleAuthorization
      */
     public function handle(Request $request, Closure $next, $roles): Response
     {
+        $response = null;
         try {
             $token = JWTAuth::parseToken();
             $user = $token->authenticate();
         } catch (TokenExpiredException $e) {
-            return $this->unauthorized('Tu token ha expirado. Por favor, vuelve a iniciar sesión.');
+            $response = $this->unauthorized('Tu token ha expirado. Por favor, vuelve a iniciar sesión.');
         } catch (TokenInvalidException $e) {
-            return $this->unauthorized('Tu token no es válido. Vuelve a iniciar sesión.');
+            $response = $this->unauthorized('Tu token no es válido. Vuelve a iniciar sesión.');
         } catch (JWTException $e) {
-            return $this->unauthorized('Por favor, adjunte un Token de Portador a su solicitud');
+            $response = $this->unauthorized('Por favor, adjunte un Token de Portador a su solicitud');
         }
 
-        // Convertir string de roles en array
-        $allowedRoles = explode(',', $roles);
+        if ($response === null) {
+            // Convertir string de roles en array
+            $allowedRoles = explode(',', $roles);
 
-        if ($user && in_array($user->role, $allowedRoles)) {
-            return $next($request);
+            if ($user && in_array($user->role, $allowedRoles)) {
+                $response = $next($request);
+            } else {
+                $response = $this->unauthorized();
+            }
         }
 
-        return $this->unauthorized();
+        return $response;
     }
 
 
