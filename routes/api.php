@@ -17,25 +17,46 @@ Route::middleware('api')->group(function () {
     Route::get('/auth/user', [AuthController::class, 'user'])->middleware('jwt.auth');
 });
 
-Route::middleware('api', 'auth.role:user')->group(function () {
-    Route::get('/user', function (Request $request) {
-        return response()->json(['message' => 'usuario']);
-    });
+// --- CITAS ---
+// Listar y ver citas: admin y user
+Route::middleware(['api', 'auth.role:admin,user'])->group(function () {
+    Route::get('citas', [CitaController::class, 'index']);
+    Route::get('citas/{cita}', [CitaController::class, 'show']);
+});
+// Crear, actualizar, eliminar citas: solo admin
+Route::middleware(['api', 'auth.role:admin'])->group(function () {
+    Route::post('citas', [CitaController::class, 'store']);
+    Route::put('citas/{cita}', [CitaController::class, 'update']);
+    Route::delete('citas/{cita}', [CitaController::class, 'destroy']);
 });
 
-Route::middleware('api', 'auth.role:admin')->group(function () {
-    Route::get('/admin', function (Request $request) {
-        return response()->json(['message' => 'admin']);
-    });
+// --- REGISTROS ---
+// Listar y ver registros: admin y user
+Route::middleware(['api', 'auth.role:admin,user'])->group(function () {
+    Route::get('registros', [RegistroManteController::class, 'index']);
+    Route::get('registros/{registro}', [RegistroManteController::class, 'show']);
+});
+// Crear, actualizar, eliminar registros: solo admin
+Route::middleware(['api', 'auth.role:admin'])->group(function () {
+    Route::post('registros', [RegistroManteController::class, 'store']);
+    Route::put('registros/{registro}', [RegistroManteController::class, 'update']);
+    Route::delete('registros/{registro}', [RegistroManteController::class, 'destroy']);
 });
 
+// --- VEHICULOS ---
+// Listar y ver vehículos: admin y user
+Route::middleware(['api', 'auth.role:admin,user'])->group(function () {
+    Route::get('vehiculos', [VehiculoController::class, 'index']);
+    Route::get('vehiculos/{vehiculo}', [VehiculoController::class, 'show']);
+});
+// Crear, actualizar, eliminar vehículos: solo admin
+Route::middleware(['api', 'auth.role:admin'])->group(function () {
+    Route::post('vehiculos', [VehiculoController::class, 'store']);
+    Route::put('vehiculos/{vehiculo}', [VehiculoController::class, 'update']);
+    Route::delete('vehiculos/{vehiculo}', [VehiculoController::class, 'destroy']);
+});
 
-Route::middleware('api')->group(function () {
+// --- USUARIOS (solo admin) ---
+Route::middleware(['api', 'auth.role:admin'])->group(function () {
     Route::resource('data', UserController::class);
-    Route::resource('citas', CitaController::class);
-    Route::resource('mantenimiento', RegistroManteController::class);
-    Route::resource('vehiculos', VehiculoController::class);
 });
-
-
-
