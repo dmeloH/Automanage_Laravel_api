@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Registrosmante
- * 
+ *
  * @property int $id
  * @property string|null $caracteristrica
  * @property string|null $fechaMante
@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $nombre
  * @property int|null $precio
  * @property int|null $registroVehiculo_Id
- * 
+ *
  * @property Vehiculo|null $vehiculo
  *
  * @package App\Models
@@ -30,7 +30,8 @@ class Registrosmante extends Model
 
 	protected $casts = [
 		'precio' => 'int',
-		'registroVehiculo_Id' => 'int'
+		'registroVehiculo_Id' => 'int',
+        'citas_id' => 'int'
 	];
 
 	protected $fillable = [
@@ -39,7 +40,8 @@ class Registrosmante extends Model
 		'imagen',
 		'nombre',
 		'precio',
-		'registroVehiculo_Id'
+		'registroVehiculo_Id',
+        'citas_id' 
 	];
 
 	public function vehiculo()

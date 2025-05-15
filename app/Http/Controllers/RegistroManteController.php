@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Registrosmante;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RegistroManteController extends Controller
 {
@@ -14,9 +15,13 @@ class RegistroManteController extends Controller
     {
         // Fetch all records from the 'registro_mante' table
         $registros = Registrosmante::all();
+        // If no records are found, return a 404 response
+        if ($registros->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron registros'], 404);
+        }
 
         // Return the records as a JSON response
-        return response()->json($registros);
+        return response()->json($registros, 201);
     }
 
     /**
@@ -30,13 +35,22 @@ class RegistroManteController extends Controller
     public function store(Request $request)
     {
         // Validate the incoming request data
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'caracteristicas' => 'required|string|max:255',
-            'fechaCita' => 'required|date',
+            'fechaMante' => 'required|date',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'nombre' => 'required|string|max:255',
+            'precio' => 'required|integer',
             'fechaPeticion' => 'required|date',
-            'registroVehiculo_Id' => 'required|integer|exists:vehiculos,registroVehiculo_Id',
-            'usuario_id' => 'required|integer|exists:usuarios,id'
+            'citas_id' => 'integer|exists:citas,id',
+            'registroVehiculo_Id' => 'required|integer|exists:vehiculos,id',
+
         ]);
+
+        // If validation fails, return a 422 response with the errors
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
         // Create a new record in the 'registro_mante' table
         $registro = Registrosmante::create($request->all());
@@ -59,7 +73,7 @@ class RegistroManteController extends Controller
         }
 
         // Return the record as a JSON response
-        return response()->json($registro);
+        return response()->json($registro, 201);
     }
 
     /**
@@ -73,13 +87,20 @@ class RegistroManteController extends Controller
     public function update(Request $request, string $id)
     {
         // Validate the incoming request data
-        $request->validate([
-            'caracteristicas' => 'required|string|max:255',
-            'fechaCita' => 'required|date',
-            'fechaPeticion' => 'required|date',
-            'registroVehiculo_Id' => 'required|integer|exists:vehiculos,registroVehiculo_Id',
-            'usuario_id' => 'required|integer|exists:usuarios,id'
+        $validator = Validator::make($request->all(), [
+            'caracteristicas' => 'string|max:255',
+            'fechaMante' => 'date',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'nombre' => 'string|max:255',
+            'precio' => 'integer',
+            'fechaPeticion' => 'date',
+            'citas_id' => 'integer|exists:citas,id',
+            'registroVehiculo_Id' => 'integer|exists:vehiculos,id',
         ]);
+        // If validation fails, return a 422 response with the errors
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
         // Find the record by ID
         $registro = Registrosmante::find($id);
@@ -93,7 +114,7 @@ class RegistroManteController extends Controller
         $registro->update($request->all());
 
         // Return the updated record as a JSON response
-        return response()->json($registro);
+        return response()->json($registro, 201);
     }
 
     /**
@@ -113,6 +134,6 @@ class RegistroManteController extends Controller
         $registro->delete();
 
         // Return a success message
-        return response()->json(['message' => 'Registro eliminado con éxito']);
+        return response()->json(['message' => 'Registro eliminado con éxito', 200]);
     }
 }
