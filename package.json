@@ -7,10 +7,17 @@
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
-        "axios": "^1.8.2",
+        "axios": "^1.9.0",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.2.0",
         "tailwindcss": "^4.0.0",
         "vite": "^6.2.4"
+    },
+    "dependencies": {
+        "@react-native-async-storage/async-storage": "^2.1.2",
+        "@react-navigation/native": "^7.1.9",
+        "@react-navigation/stack": "^7.3.2",
+        "react-native-safe-area-context": "^5.4.0",
+        "react-native-screens": "^4.10.0"
     }
 }
