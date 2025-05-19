@@ -18,7 +18,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
  */
 Route::middleware('api')->group(function () {
     // Registrar nuevo usuario
-    Route::post('/auth/registrar', [AuthController::class, 'registrar']);
+    Route::post('/auth/signup', [AuthController::class, 'registrar']);
     // Login de usuario
     Route::post('/auth/login', [AuthController::class, 'login']);
     // Logout (requiere token JWT válido)

@@ -27,6 +27,12 @@ class AuthController extends Controller
             ], 422);
         }
 
+        if (Usuario::where('email', $request->email)->exists() ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El correo electrónico ya está en uso',
+            ], 422);
+        }
         $user = Usuario::create([
             'nombre' => $request->nombre,
             'email' => $request->email,
@@ -71,6 +77,7 @@ class AuthController extends Controller
         }
         return response()->json([
             'success' => true,
+            'user' => JWTAuth::user(),
             'token' => $token,
             'status' => 200
         ]);
