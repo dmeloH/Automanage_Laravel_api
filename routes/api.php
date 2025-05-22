@@ -34,13 +34,13 @@ Route::middleware('api')->group(function () {
  * - GET: admin y user pueden listar y ver citas.
  * - POST, PUT, DELETE: solo admin puede crear, actualizar y eliminar citas.
  */
-Route::middleware(['api', 'auth.role:admin,user'])->group(function () {
+Route::middleware(['api', 'jwt.auth', 'auth.role:admin,user'])->group(function () {
     // Listar todas las citas
     Route::get('citas', [CitaController::class, 'index']);
     // Ver detalles de una cita específica
     Route::get('citas/{cita}', [CitaController::class, 'show']);
 });
-Route::middleware(['api', 'auth.role:admin'])->group(function () {
+Route::middleware(['api', 'jwt.auth', 'auth.role:admin'])->group(function () {
     // Crear nueva cita
     Route::post('citas', [CitaController::class, 'store']);
     // Actualizar cita existente
@@ -54,7 +54,7 @@ Route::middleware(['api', 'auth.role:admin'])->group(function () {
  * - GET: admin y user pueden listar y ver registros.
  * - POST, PUT, DELETE: solo admin puede crear, actualizar y eliminar registros.
  */
-Route::middleware(['api', 'auth.role:admin,user'])->group(function () {
+Route::middleware(['api','jwt.auth','auth.role:admin,user'])->group(function () {
     // Listar todos los registros de mantenimiento
     Route::get('registros', [RegistroManteController::class, 'index']);
     // Ver detalles de un registro específico
@@ -74,7 +74,7 @@ Route::middleware(['api', 'auth.role:admin'])->group(function () {
  * - GET: admin y user pueden listar y ver vehículos.
  * - POST, PUT, DELETE: solo admin puede crear, actualizar y eliminar vehículos.
  */
-Route::middleware(['api', 'auth.role:admin,user'])->group(function () {
+Route::middleware(['api', 'jwt.auth','auth.role:admin,user'])->group(function () {
     // Listar todos los vehículos
     Route::get('vehiculos', [VehiculoController::class, 'index']);
     // Ver detalles de un vehículo específico
@@ -93,7 +93,7 @@ Route::middleware(['api', 'auth.role:admin'])->group(function () {
  * Rutas para USUARIOS
  * - Solo admin puede acceder a la gestión de usuarios.
  */
-Route::middleware(['api', 'auth.role:admin'])->group(function () {
+Route::middleware(['api','jwt.auth', 'auth.role:admin'])->group(function () {
     // CRUD completo para usuarios (solo admin)
     Route::resource('data', UserController::class);
 });
