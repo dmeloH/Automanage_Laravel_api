@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController as ApiAuthController;
+use App\Http\Controllers\Api\UserController as ApiUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +13,26 @@ use App\Http\Controllers\VehiculoController;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Http;
 use Tymon\JWTAuth\Facades\JWTAuth;
+
+
+
+/**
+ * Rutas de la arquitectura limpia
+ * - Registro, login, logout, refresh y obtener usuario autenticado.
+ */
+//Lista de usuarios
+Route::get('usuarioclear', [ApiUserController::class, 'show']);
+//Registro de usuario
+Route::post('RegistrarClear', [ApiAuthController::class, 'registrar']);
+//Login de usuario
+Route::post('LoginClear', [ApiAuthController::class, 'login']);
+//Logout de usuario
+Route::get('LogoutClear', [ApiAuthController::class, 'logout'])->middleware('jwt.auth');
+//Refrescar token
+Route::get('RefreshClear', [ApiAuthController::class, 'refresh']);
+//Obtener usuario autenticado
+Route::get('UserClear', [ApiAuthController::class, 'user'])->middleware('jwt.auth');
+
 
 /**
  * Rutas de autenticación
@@ -54,7 +76,7 @@ Route::middleware(['api', 'jwt.auth', 'auth.role:admin'])->group(function () {
  * - GET: admin y user pueden listar y ver registros.
  * - POST, PUT, DELETE: solo admin puede crear, actualizar y eliminar registros.
  */
-Route::middleware(['api','jwt.auth','auth.role:admin,user'])->group(function () {
+Route::middleware(['api', 'jwt.auth', 'auth.role:admin,user'])->group(function () {
     // Listar todos los registros de mantenimiento
     Route::get('registros', [RegistroManteController::class, 'index']);
     // Ver detalles de un registro específico
@@ -74,7 +96,7 @@ Route::middleware(['api', 'auth.role:admin'])->group(function () {
  * - GET: admin y user pueden listar y ver vehículos.
  * - POST, PUT, DELETE: solo admin puede crear, actualizar y eliminar vehículos.
  */
-Route::middleware(['api', 'jwt.auth','auth.role:admin,user'])->group(function () {
+Route::middleware(['api', 'jwt.auth', 'auth.role:admin,user'])->group(function () {
     // Listar todos los vehículos
     Route::get('vehiculos', [VehiculoController::class, 'index']);
     // Ver detalles de un vehículo específico
@@ -93,7 +115,7 @@ Route::middleware(['api', 'auth.role:admin'])->group(function () {
  * Rutas para USUARIOS
  * - Solo admin puede acceder a la gestión de usuarios.
  */
-Route::middleware(['api','jwt.auth', 'auth.role:admin'])->group(function () {
+Route::middleware(['api', 'jwt.auth', 'auth.role:admin'])->group(function () {
     // CRUD completo para usuarios (solo admin)
     Route::resource('data', UserController::class);
 });
