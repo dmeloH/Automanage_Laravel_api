@@ -10,12 +10,18 @@ use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+/**
+ * Middleware para autorizar accesos basados en roles usando JWT.
+ */
 class RoleAuthorization
 {
     /**
-     * Handle an incoming request.
+     * Maneja la solicitud entrante y verifica si el usuario tiene uno de los roles permitidos.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param Request $request La solicitud HTTP entrante.
+     * @param Closure $next La siguiente función middleware a ejecutar.
+     * @param string $roles Coma separada, lista de roles permitidos (por ejemplo: "admin,cliente").
+     * @return Response Una respuesta HTTP, ya sea continuando o rechazando la solicitud.
      */
     public function handle(Request $request, Closure $next, $roles): Response
     {
@@ -40,11 +46,16 @@ class RoleAuthorization
         return $this->unauthorized();
     }
 
-
+    /**
+     * Devuelve una respuesta JSON no autorizada.
+     *
+     * @param string|null $message Mensaje de error personalizado.
+     * @return \Illuminate\Http\JsonResponse Respuesta con código 401.
+     */
     private function unauthorized($message = null)
     {
         return response()->json([
-            'message' => $message ? $message : 'No está autorizado para acceder a este recurso.',
+            'message' => $message ?? 'No está autorizado para acceder a este recurso.',
             'success' => false
         ], 401);
     }
