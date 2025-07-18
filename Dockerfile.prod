@@ -1,0 +1,40 @@
+# Imagen base oficial de PHP con Apache
+FROM php:8.2-apache
+
+# Instala extensiones necesarias y utilidades del sistema
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Habilita mod_rewrite de Apache
+RUN a2enmod rewrite
+
+# Copia los archivos del proyecto al contenedor
+COPY . /var/www/html
+
+# Establece el directorio de trabajo
+WORKDIR /var/www/html
+
+# Copia y configura el archivo de virtual host de Apache si existe
+# COPY ./docker/vhost.conf /etc/apache2/sites-available/000-default.conf
+
+# Instala Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+# Instala dependencias de PHP
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Da permisos a los directorios de almacenamiento y caché
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Expone el puerto 80
+EXPOSE 80
+
+# Comando por defecto para iniciar Apache en primer plano
+CMD ["apache2-foreground"]

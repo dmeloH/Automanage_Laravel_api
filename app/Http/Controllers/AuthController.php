@@ -17,8 +17,8 @@ class AuthController extends Controller
             'nombre' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'telefono' => 'required|string|max:15',
-            'direccion' => 'required|string|max:255',
+            'telefono' => 'string|max:15',
+            'direccion' => 'string|max:255',
             'role' => 'string|max:50',
             'username' => 'required|string|max:50',
         ]);
