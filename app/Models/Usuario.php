@@ -51,6 +51,10 @@ class Usuario extends  Authenticatable  implements JWTSubject
         'username'
     ];
 
+    protected $attributes = [
+        'role' => 'user',
+    ];
+
     public function citas()
     {
         return $this->hasMany(Cita::class);
