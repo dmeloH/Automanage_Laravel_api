@@ -14,43 +14,56 @@ class RoleAuthorization
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next, $roles): Response
     {
-        $response = null;
         try {
-            $token = JWTAuth::parseToken();
-            $user = $token->authenticate();
-        } catch (TokenExpiredException $e) {
-            $response = $this->unauthorized('Tu token ha expirado. Por favor, vuelve a iniciar sesión.');
-        } catch (TokenInvalidException $e) {
-            $response = $this->unauthorized('Tu token no es válido. Vuelve a iniciar sesión.');
-        } catch (JWTException $e) {
-            $response = $this->unauthorized('Por favor, adjunte un Token de Portador a su solicitud');
-        }
+            // Autenticar usuario desde el token JWT
+            $user = JWTAuth::parseToken()->authenticate();
 
-        if ($response === null) {
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Usuario no encontrado',
+                    'success' => false
+                ], 401);
+            }
+
+            // Cargar la relación role si no está cargada
+            if (!$user->relationLoaded('role')) {
+                $user->load('role');
+            }
+
             // Convertir string de roles en array
             $allowedRoles = explode(',', $roles);
 
-            if ($user && in_array($user->role, $allowedRoles)) {
-                $response = $next($request);
-            } else {
-                $response = $this->unauthorized();
+            // Verificar si el rol del usuario está permitido
+            if (in_array($user->role->name, $allowedRoles)) {
+                return $next($request);
             }
+
+            return response()->json([
+                'message' => 'Acceso denegado: permisos insuficientes',
+                'success' => false
+            ], 403);
+
+        } catch (TokenExpiredException $e) {
+            return response()->json([
+                'message' => 'Token expirado',
+                'error' => 'token_expired',
+                'success' => false
+            ], 401);
+        } catch (TokenInvalidException $e) {
+            return response()->json([
+                'message' => 'Token inválido',
+                'error' => 'token_invalid',
+                'success' => false
+            ], 401);
+        } catch (JWTException $e) {
+            return response()->json([
+                'message' => 'Token no proporcionado',
+                'error' => 'token_absent',
+                'success' => false
+            ], 401);
         }
-
-        return $response;
-    }
-
-
-    private function unauthorized($message = null)
-    {
-        return response()->json([
-            'message' => $message ? $message : 'No está autorizado para acceder a este recurso.',
-            'success' => false
-        ], 401);
     }
 }

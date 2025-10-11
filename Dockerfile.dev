@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    && docker-php-ext-install pdo pdo_mysql zip gd
+    && docker-php-ext-install pdo pdo_mysql zip gd sockets
 
 # Habilita mod_rewrite de Apache
 RUN a2enmod rewrite
@@ -20,13 +20,23 @@ COPY . /var/www/html
 # Establece el directorio de trabajo
 WORKDIR /var/www/html
 
+# Soluciona el error de ownership de Git
+RUN git config --global --add safe.directory /var/www/html
+
+# Instala la extensión de sockets
+RUN docker-php-ext-install sockets
+
 # Instala Composer globalmente
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Configuración personalizada de Apache
 COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
-
-# Da permisos a la carpeta de almacenamiento y caché
+# Asigna permisos a storage y bootstrap/cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Instala dependencias de Laravel
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Expone el puerto 80
 EXPOSE 80

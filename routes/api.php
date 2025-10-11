@@ -61,9 +61,7 @@ Route::middleware(['api', 'jwt.auth', 'auth.role:admin,user'])->group(function (
     Route::get('citas', [CitaController::class, 'index']);
     // Ver detalles de una cita específica
     Route::get('citas/{cita}', [CitaController::class, 'show']);
-});
-Route::middleware(['api', 'jwt.auth', 'auth.role:admin'])->group(function () {
-    // Crear nueva cita
+       // Crear nueva cita
     Route::post('citas', [CitaController::class, 'store']);
     // Actualizar cita existente
     Route::put('citas/{cita}', [CitaController::class, 'update']);
@@ -82,6 +80,8 @@ Route::middleware(['api', 'jwt.auth', 'auth.role:admin,user'])->group(function (
     // Ver detalles de un registro específico
     Route::get('registros/{registro}', [RegistroManteController::class, 'show']);
 });
+
+
 Route::middleware(['api', 'auth.role:admin'])->group(function () {
     // Crear nuevo registro de mantenimiento
     Route::post('registros', [RegistroManteController::class, 'store']);
